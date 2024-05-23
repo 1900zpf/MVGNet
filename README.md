@@ -18,7 +18,14 @@
 
 You can download our model's prediction results on the SOD([Google Drive](https://drive.google.com/file/d/1TP0V2Hz7y7fGylZ-dWmiF4UEq2UB8P8W/view?usp=drive_link)) and COD([Google Drive](https://drive.google.com/file/d/1ol1VzX2l8TF23V1HwXRlFlOcAc2n24P_/view?usp=drive_link)) datasets.
 ### Dataset
-xxxx
 
++ downloading testing dataset and move it into `./Dataset/TestDataset/`, 
+    which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1SLRB5Wg1Hdy7CQ74s3mTQ3ChhjFRSFdZ/view?usp=sharing).
+    
++ downloading training dataset and move it into `./Dataset/TrainDataset/`, 
+    which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1Kifp7I0n9dlWKXXNIbN7kgyokoRY4Yz7/view?usp=sharing).
+
+
+After our paper is accepted, we will further refine this code repository.
 
 
