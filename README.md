@@ -3,13 +3,13 @@
 
 ### Comparison results
 <p align="center">
-    <img src="figs/SOD.png"  width="600"  width="1200"/> <br />
+    <img src="Figs/SOD.png"  width="600"  width="1200"/> <br />
     <em> 
     Fig.1: Comparison of segmentation performance with other SOD models.
     </em>
 </p>
 <p align="center">
-    <img src="figs/COD.png"  width="600"  width="1200"/> <br />
+    <img src="Figs/COD.png"  width="600"  width="1200"/> <br />
     <em> 
     Fig.2: Comparison of segmentation performance with other COD models.
     </em>
