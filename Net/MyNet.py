@@ -49,7 +49,7 @@ class DimensionalReduction(nn.Module):
 
 
 
-# The following is this modification
+
 
 class MultiScaleFusionModel(nn.Module):
     def __init__(self, in_channel):
@@ -69,28 +69,26 @@ class MultiScaleFusionModel(nn.Module):
             nn.Softmax(dim=1),
         )
     def forward(self, x_l,x_m,x_s,image_size):
-        # x_l:17x17 x_m:11x11 x_s:6x6
-
-        # x_l:Bx64x17x17
-        x_l = self.conv_l(x_l) # Bx64x17x17
+       
+        x_l = self.conv_l(x_l) 
         x_l = F.interpolate(x_l, image_size, mode='bilinear', align_corners=False)
-        x_l = self.conv_l(x_l) # Bx64x11x11
+        x_l = self.conv_l(x_l) 
 
-        # x_m:Bx64x11x11
+
         x_m = self.conv_m(x_m)
         x_m = F.interpolate(x_m, image_size, mode='bilinear', align_corners=False)
-        x_m = self.conv_l(x_m)  # Bx64x11x11
+        x_m = self.conv_l(x_m) 
 
-        # x_s:Bx64x11x11
-        x_s = self.conv_s(x_s)  # Bx64x6x6
+ 
+        x_s = self.conv_s(x_s)  
         x_s = F.interpolate(x_s, image_size, mode='bilinear', align_corners=False)
-        x_s = self.conv_s(x_s)  # Bx64x11x11
+        x_s = self.conv_s(x_s)  
 
 
-        out_att = self.att(torch.cat((x_l, x_m, x_s), dim=1)) # Bx192x11x11
-        out = self.conv1(torch.cat((x_l, x_m, x_s), dim=1)) # Bx192x11x11
-        out = out * out_att # # Bx192x11x11
-        out = self.conv2(out) # Bx64x11x11
+        out_att = self.att(torch.cat((x_l, x_m, x_s), dim=1)) 
+        out = self.conv1(torch.cat((x_l, x_m, x_s), dim=1)) 
+        out = out * out_att 
+        out = self.conv2(out) 
         pred = self.conv3(out)
         return out, pred
 
@@ -104,21 +102,21 @@ class CA_Block(nn.Module):
 
     def forward(self, x, mask):
         B, C, H, W = x.size()
-        q_x = x.view(B, C, -1) # view就相当于reshape 这里将矩阵变成CxN大小 N=HxW
+        q_x = x.view(B, C, -1) 
         k_x = x.view(B, C, -1)
         mask = mask.view(B, 1, -1)
         q_x = q_x * mask
         k_x = k_x * mask
-        k_x = k_x.permute(0, 2, 1) # permute是交换维度 本来[0,1,2] 换为[0,2,1]
+        k_x = k_x.permute(0, 2, 1) 
 
-        energy = torch.bmm(q_x, k_x) # 矩阵做乘法 得到BxCxC
-        attention = self.softmax(energy) # softmax
+        energy = torch.bmm(q_x, k_x) 
+        attention = self.softmax(energy) 
         v_x = x.view(B, C, -1) #
 
-        out = torch.bmm(attention, v_x) # 再做乘法 得到BxCxN N=HxW
-        out = out.view(B, C, H, W) # reshape回 BxCxHxW
+        out = torch.bmm(attention, v_x)
+        out = out.view(B, C, H, W)
 
-        out = self.gamma * out + x # gamma是一个可以学习的参数 为了增加容错能力
+        out = self.gamma * out + x 
         return out
 
 class SA_Block(nn.Module):
@@ -133,19 +131,19 @@ class SA_Block(nn.Module):
     def forward(self, x, mask):
         B, C, H, W = x.size()
         q_x = self.query_conv(x).view(B, -1, W * H)
-        k_x = self.key_conv(x).view(B, -1, W * H) # 卷积 reshape
+        k_x = self.key_conv(x).view(B, -1, W * H)
         mask = mask.view(B, -1, W * H)
         q_x = q_x * mask
         k_x = k_x * mask
-        q_x = q_x.permute(0, 2, 1)# 卷积 reshape 转置
-        energy = torch.bmm(q_x, k_x) # 矩阵乘法
-        attention = self.softmax(energy) # softmax
-        v_x = self.value_conv(x).view(B, -1, W * H) # 卷积 reshape
+        q_x = q_x.permute(0, 2, 1)
+        energy = torch.bmm(q_x, k_x) 
+        attention = self.softmax(energy) 
+        v_x = self.value_conv(x).view(B, -1, W * H) 
 
-        out = torch.bmm(v_x, attention.permute(0, 2, 1)) # 将V转置
-        out = out.view(B, C, H, W) # 做矩阵乘法
+        out = torch.bmm(v_x, attention.permute(0, 2, 1)) 
+        out = out.view(B, C, H, W) 
 
-        out = self.gamma * out + x # 乘以参数gamma 再加上输入
+        out = self.gamma * out + x 
         return out
 
 
@@ -180,45 +178,44 @@ class MyNet(nn.Module):
         self.model_arc = arc
         if arc == 'PVTv2-B0':
             print('--> using PVTv2-B0 right now')
-            self.context_encoder = pvt_v2_b0(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b0(pretrained=True)  
             in_channel_list = [64, 160, 256]
         elif arc == 'PVTv2-B1':
             print('--> using PVTv2-B1 right now')
-            self.context_encoder = pvt_v2_b1(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b1(pretrained=True)  
             in_channel_list = [128, 320, 512]
         elif arc == 'PVTv2-B2':
             print('--> using PVTv2-B2 right now')
-            self.context_encoder = pvt_v2_b2(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b2(pretrained=True)  
             in_channel_list = [128, 320, 512]
         elif arc == 'PVTv2-B2-li':
             print('--> using PVTv2-B2-li right now')
-            self.context_encoder = pvt_v2_b2_li(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b2_li(pretrained=True)  
             in_channel_list = [128, 320, 512]
-        # 主干网络采用PVTv2-B4
+
         elif arc == 'PVTv2-B4':
             print('--> using PVTv2-B4 right now')
-            self.context_encoder = pvt_v2_b4(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b4(pretrained=True)  
             in_channel_list = [128, 320, 512]
         elif arc == 'PVTv2-B5':
             print('--> using PVTv2-B5 right now')
-            self.context_encoder = pvt_v2_b5(pretrained=True)  # 加载预训练模型
+            self.context_encoder = pvt_v2_b5(pretrained=True)  
             in_channel_list = [128, 320, 512]
-        # 主干网络采用P2T
         elif arc == 'P2T-base':
             print('--> using P2T-base right now')
-            self.context_encoder = Encoder_p2t_base()  # 加载预训练模型
+            self.context_encoder = Encoder_p2t_base()  
             in_channel_list = [128, 320, 512]
         elif arc == 'P2T-small':
             print('--> using P2T-small right now')
-            self.context_encoder = Encoder_p2t_small()  # 加载预训练模型
+            self.context_encoder = Encoder_p2t_small()  
             in_channel_list = [128, 320, 512]
         elif arc == 'P2T-tiny':
             print('--> using P2T-tiny right now')
-            self.context_encoder = Encoder_p2t_tiny()  # 加载预训练模型
+            self.context_encoder = Encoder_p2t_tiny() 
             in_channel_list = [96, 240, 384]
         elif arc == 'P2T-large':
             print('--> using P2T-large right now')
-            self.context_encoder = Encoder_p2t_large()  # 加载预训练模型
+            self.context_encoder = Encoder_p2t_large()  
             in_channel_list = [128, 320, 640]
         else:
             raise Exception("Invalid Architecture Symbol: {}".format(arc))
@@ -247,25 +244,24 @@ class MyNet(nn.Module):
 
         if self.model_arc == 'PVTv2-B4' or self.model_arc == 'PVTv2-B5' or self.model_arc == 'PVTv2-B0':
             endpoints = self.context_encoder.extract_endpoints(x)
-            x1 = endpoints['reduction_2']  # 2x64x88x88
-            x2 = endpoints['reduction_3']  # 2x128x44x44
-            x3 = endpoints['reduction_4']  # 2x320x22x22
-            x4 = endpoints['reduction_5']  # 2x512x11x11
+            x1 = endpoints['reduction_2']  
+            x2 = endpoints['reduction_3']  
+            x3 = endpoints['reduction_4']  
+            x4 = endpoints['reduction_5']  
         elif self.model_arc == 'P2T-base' or self.model_arc == 'P2T-small' or self.model_arc == 'P2T-tiny' or self.model_arc == 'P2T-large':
-            # large x2:8x64x88x88 x3:8x128x44x44 x4:8x320x22x22 x5:8x640x11x11
+            
             x4, x3, x2, x1 = self.context_encoder(x)
 
         shape = x.size()[2:]
-        xr1 = self.dr2(x1) # 2x64x88x88
-        xr2 = self.dr3(x2) # 2x64x44x44
-        xr3 = self.dr4(x3) # 2x64x22x22
-        xr4 = self.dr5(x4) # 2x64x11x11
+        xr1 = self.dr2(x1) 
+        xr2 = self.dr3(x2) 
+        xr3 = self.dr4(x3)
+        xr4 = self.dr5(x4)
 
-        # The following is this modification
-        # CNN
-        o_x = x # 1.0 Bx3x352x352
-        o_x15 = self.upsample15(x) # 1.5 Bx3x528x528
-        o_x05 = self.upsample05(x) # 0.5 Bx3x176x176
+       
+        o_x = x 
+        o_x15 = self.upsample15(x) 
+        o_x05 = self.upsample05(x) 
 
         x_l_1 = self.CNN_encode1(o_x15)
         x_l_2 = self.CNN_encode2(x_l_1)
@@ -283,7 +279,7 @@ class MyNet(nn.Module):
         x_s_4 = self.CNN_encode4(x_s_3)
 
 
-        out_cnn, cnn_pred = self.msfm(x_l_4, x_m_4, x_s_4, xr4.shape[2:]) # Bx64x11x11
+        out_cnn, cnn_pred = self.msfm(x_l_4, x_m_4, x_s_4, xr4.shape[2:]) 
 
         # new decoder
         d4 = self.decode4(out_cnn, xr4, cnn_pred)
@@ -307,7 +303,7 @@ class MyNet(nn.Module):
         # p4 = F.interpolate(p4, size=shape, mode='bilinear')
         p_cnn = F.interpolate(cnn_pred, size=shape, mode='bilinear')
 
-        return p1, p_cnnHuang123
+        return p1
 
 
 if __name__ == '__main__':

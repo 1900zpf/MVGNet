@@ -35,11 +35,6 @@ def evaluator(model, val_root, map_save_path, edge_save_path, trainsize=352):
             # misc.imsave(map_save_path + name, output)
             print('>>> saving prediction at: {}'.format(map_save_path + name))
 
-            # edge = F.upsample(output_sum[1], size=gt.shape, mode='bilinear', align_corners=False)
-            # edge = edge.sigmoid().data.cpu().numpy().squeeze()
-            # edge = (edge - edge.min()) / (edge.max() - edge.min() + 1e-8)
-            # imageio.imsave(edge_save_path + name, edge)
-
 
 
 
@@ -51,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu_id', type=str, default='0',
                         help='train use gpu')
     opt = parser.parse_args()
-    # 保存测试结果
+ 
     txt_save_path = './Result/Test_result/{}/'.format(opt.snap_path.split('/')[-2])
     os.makedirs(txt_save_path, exist_ok=True)
 

@@ -143,42 +143,25 @@ if __name__ == '__main__':
         default='./Dataset/TestDataset')
     parser.add_argument(
         '--pred_root', type=str, help='prediction root',
-        # default='/media/server/HDD1/zpf/otherNet/') # 预测图的根路径
-        default='./Result/Test_result/') # 预测图的根路径
+        
+        default='./Result/Test_result/') 
     parser.add_argument(
         '--gpu_id', type=str, help='gpu device',
         default='0')
     parser.add_argument(
         '--data_lst', type=list, help='test dataset',
         default=['CAMO', 'COD10K', 'NC4K','CHAMELEON'],
-        # default=['CHAMELEON'],
+        
         choices=['CHAMELEON', 'CAMO', 'COD10K', 'NC4K'])
 
-    '''
-    2020-CVPR-SINet-4          ok
-    2021-CVPR-UJSC-4           ok
-    2022-IJCAI-BGNet-4         ok
-    2021-IJCAI-C2FNet-4        ok
-    2022-TPAMI-ICON-4          ok
-    2021-CVPR-MGL-R-4          ok
-    2022-AAAI-BASNet-4         ok
-    2022-TPAMI-SINetV2-4       ok
-    2021-CVPR-PFNet-4          ok
-    2022-CVPR-FDNet-4          ok
-    2023-MIR-DGNet-4           ok
-    2021-CVPR-SLSR-4           ok
-    2022-CVPR-SegMaR-4         ok
-    2021-ICCV-UGTR-4           ok
-    2022-CVPR-ZoomNet-4        ok
-    '''
-    ##  2021-AAAI-TINet-333333333
+    
 
     parser.add_argument(
         '--model_lst', type=list, help='candidate competitors',
-        default=['P2T-l-v10Net_416_CAMO_50epoch_xr_CNN']) # 要测试的文件夹名字  xr_0421_no_MFFM_initdata
+        default=['P2T-l-v10Net_416_CAMO_50epoch_xr_CNN']) 
     parser.add_argument(
         '--txt_name', type=str, help='candidate competitors',
-        default='P2T-l-v10Net_416_CAMO_50epoch_xr_CNN') # 结果保存为txt文件  txt文件的保存路径
+        default='P2T-l-v10Net_416_CAMO_50epoch_xr_CNN') 
     parser.add_argument(
         '--check_integrity', type=bool, help='whether to check the file integrity',
         default=True)
@@ -188,14 +171,11 @@ if __name__ == '__main__':
         choices=['eval_all', 'eval_super', 'eval_sub'])
     opt = parser.parse_args()
 
-    # txt_save_path = '/media/server/HDD1/zpf/result_save/{}/'.format(opt.txt_name)
+    
     txt_save_path = './Result/txt_result/{}/'.format(opt.txt_name)
     os.makedirs(txt_save_path, exist_ok=True)
 
-    # sys.stdout = Logger(txt_save_path + 'evaluation_results.log')
-    # print('>>> current configs:', opt)
-
-    # check the integrity of each candidates
+    
     if opt.check_integrity:
         for _data_name in opt.data_lst:
             for _model_name in opt.model_lst:

@@ -45,12 +45,8 @@ def get_coef(iter_percentage, method):
 
 
 def UAL_Loss(preds,gts,iter_percentage):
-    # iter_percentage 是当前代数/总训练代数   如 1/40
-    # method 是选择模式 linear、cos或者常数(1.0)   最好结果是cos   所以默认选cos
     ual_coef = get_coef(iter_percentage, "cos")
-    # 第一个参数是预测图  第二个参数是gt
     ual_loss = cal_ual(seg_logits=preds, seg_gts=gts)
-    # 乘以参数
     ual_loss *= ual_coef
     return ual_loss
 
@@ -96,18 +92,15 @@ def train(train_loader, model, optimizer, epoch, save_path, writer):
 
             images = images.cuda()
             gts = gts.cuda()
-            # return p, Edge, p4, p5
             p1,pcnn = model(images)
             loss_p1 = structure_loss(p1, gts)
             loss_pcnn = structure_loss(pcnn, gts)
             loss_pred = loss_p1 + loss_pcnn
-            # loss_cnn = structure_loss(p_cnn, gts)
+           
 
             iter_per = epoch / opt.epoch
             loss_ual1 = UAL_Loss(p1, gts, iter_percentage=iter_per)
-            # loss_ual2 = UAL_Loss(p_cnn, gts, iter_percentage=iter_per)
 
-            # loss = loss_pred + loss_cnn + loss_ual1 + loss_ual2
             loss = loss_pred  + loss_ual1
 
             loss.backward()
@@ -222,8 +215,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epoch', type=int, default=50, help='epoch number')
     parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
-    parser.add_argument('--batchsize', type=int, default=2, help='training batch size')
-    parser.add_argument('--trainsize', type=int, default=384, help='training dataset size')
+    parser.add_argument('--batchsize', type=int, default=8, help='training batch size')
+    parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
     parser.add_argument('--clip', type=float, default=0.5, help='gradient clipping margin')
     parser.add_argument('--decay_rate', type=float, default=0.1, help='decay rate of learning rate')
     parser.add_argument('--decay_epoch', type=int, default=50, help='every n epochs decay learning rate')
@@ -273,10 +266,8 @@ if __name__ == '__main__':
     else:
         raise Exception("Invalid Model Symbol: {}".format(opt.model))
 
-    # 梯度（纹理）损失函数
     grad_loss_func = torch.nn.MSELoss()
 
-    # 加载预训练模型
     if opt.load is not None:
         # state_dict = torch.load(opt.load)
         # state_dict.pop('head.weight')
@@ -285,26 +276,26 @@ if __name__ == '__main__':
 
         model.load_state_dict(torch.load(opt.load))
         print('load model from ', opt.load)
-    # 优化器
+
     optimizer = torch.optim.Adam(model.parameters(), opt.lr)
-    # 保存模型的路径
+
     save_path = opt.save_path
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    # load data
+
     print('load data...')
-    train_loader = get_loader(image_root=opt.train_root + 'Imgs/',  # 原图像
-                              gt_root=opt.train_root + 'GT/',       # 标注结果
-                              batchsize=opt.batchsize, #
-                              trainsize=opt.trainsize, # 训练图像大小
+    train_loader = get_loader(image_root=opt.train_root + 'Imgs/',  
+                              gt_root=opt.train_root + 'GT/',       
+                              batchsize=opt.batchsize, 
+                              trainsize=opt.trainsize, 
                               num_workers=4)
     val_loader = test_dataset(image_root=opt.val_root + 'Imgs/',
                               gt_root=opt.val_root + 'GT/',
                               testsize=opt.trainsize)
     total_step = len(train_loader)
 
-    # logging
+
     logging.basicConfig(filename=save_path + 'log.log',
                         format='[%(asctime)s-%(filename)s-%(levelname)s:%(message)s]',
                         level=logging.INFO, filemode='a', datefmt='%Y-%m-%d %I:%M:%S %p')
