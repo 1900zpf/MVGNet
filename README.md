@@ -15,8 +15,6 @@
     </em>
 </p>
 
-
-You can download our model's prediction results on the SOD([Google Drive](https://drive.google.com/file/d/1TP0V2Hz7y7fGylZ-dWmiF4UEq2UB8P8W/view?usp=drive_link)) and COD([Google Drive](https://drive.google.com/file/d/1ol1VzX2l8TF23V1HwXRlFlOcAc2n24P_/view?usp=drive_link)) datasets.
 ### Dataset
 
 + downloading testing dataset and move it into `./Dataset/TestDataset/`, 
@@ -26,6 +24,6 @@ You can download our model's prediction results on the SOD([Google Drive](https:
     which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1Kifp7I0n9dlWKXXNIbN7kgyokoRY4Yz7/view?usp=sharing).
 
 
-If you have any questions about this project, please send an email to: zpf1900@foxmail.com
+
 
 
