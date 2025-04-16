@@ -26,6 +26,6 @@ You can download our model's prediction results on the SOD([Google Drive](https:
     which can be found in this [download link (Google Drive)](https://drive.google.com/file/d/1Kifp7I0n9dlWKXXNIbN7kgyokoRY4Yz7/view?usp=sharing).
 
 
-After our paper is accepted, we will further refine this code repository.
+If you have any questions about this project, please send an email to: zpf1900@foxmail.com
 
 
